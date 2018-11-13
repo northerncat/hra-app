@@ -1,0 +1,6 @@
+@import '~/src/styles/leaflet.css';
+
+.leaflet-container {
+    height: 750px;
+    background-color: #AAD3DF;
+}
