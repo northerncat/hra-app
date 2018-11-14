@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Map, TileLayer, LayersControl, ScaleControl } from "react-leaflet";
 import 'leaflet/dist/leaflet.css';
 import './style.css';
-const { BaseLayer } = LayersControl;
+const { BaseLayer, Overlay } = LayersControl;
 
 export default class MapView extends Component {
   constructor(props) {
@@ -12,7 +12,7 @@ export default class MapView extends Component {
     lat: 51.505,
     lng: -0.09,
     zoom: 10,
-    maxZoom: 10 // for ESRI Ocean Base Map
+    maxZoom: 10 // for ESRI Ocean Base Map, which has the most limited zoom level
     };
   }
 
