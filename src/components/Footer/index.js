@@ -1,18 +1,16 @@
-import React from "react";
-import "./style.css";
+import React from 'react';
+import './style.css';
 
-const Footer = () => (
-  <div className="footer">
-    <div className="container">
-      <hr className="border-primary" />
-      <p>
-        <a href="http://data.naturalcapitalproject.org/nightly-build/invest-users-guide/html/index.html">
-          <br />
-          <strong>InVEST User Guide</strong>
-        </a>
-      </p>
-    </div>
-  </div>
-);
+class Footer extends React.Component {
+  render() {
+    return (
+      <div className="footer col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <h4 className="text-center">
+          <a href="http://data.naturalcapitalproject.org/nightly-build/invest-users-guide/html/index.html" target="blank">InVEST User Guide</a>
+        </h4>
+      </div>
+    );
+  }
+}
 
 export default Footer;

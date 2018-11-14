@@ -13,5 +13,4 @@ class Navi extends React.Component {
     );
   }
 }
-
 export default Navi;
