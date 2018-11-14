@@ -1,6 +1,4 @@
-@import '../../styles/leaflet.css';
-
-Map {
+.leaflet-container {
   height: 450px;
   background-color: #AAD3DF;
 }

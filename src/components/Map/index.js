@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { Map, TileLayer, LayersControl, ScaleControl } from "react-leaflet";
 import 'leaflet/dist/leaflet.css';
-const { BaseLayer, Overlay } = LayersControl;
+import './style.css';
+const { BaseLayer } = LayersControl;
 
 export default class MapView extends Component {
   constructor(props) {
