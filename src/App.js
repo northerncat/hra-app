@@ -8,7 +8,7 @@ class App extends Component {
   constructor(props) {
     super (props); // Required to call original constructor
     this.state = {
-      title: "HRA"
+      title: "Habitat Risk Assessment"
     }
   }
   render() {

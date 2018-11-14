@@ -12,7 +12,8 @@ export default class MapView extends Component {
     lat: 51.505,
     lng: -0.09,
     zoom: 10,
-    maxZoom: 10 // for ESRI Ocean Base Map, which has the most limited zoom level
+    maxZoom: 10, // for ESRI Ocean Base Map, which has the most limited zoom level
+    minZoom: 2, // global scale
     };
   }
 
@@ -20,7 +21,7 @@ export default class MapView extends Component {
     let position = [this.state.lat, this.state.lng];
     return (
       <div>
-        <Map center={position} zoom={this.state.zoom} style={{height: "650px"}} maxZoom={this.state.maxZoom}>
+        <Map center={position} zoom={this.state.zoom} style={{height: "650px"}} maxZoom={this.state.maxZoom} minZoom={this.state.minZoom}>
           <LayersControl position='topright' collapsed="false">
             <BaseLayer name="Open Street Map" checked>
               <TileLayer
