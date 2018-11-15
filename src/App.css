@@ -1,5 +1,13 @@
 body {
-  width: 100%;
+  width: 100vw;
+  height: 100vh;
+  margin: 0px;
+}
+
+#root {
   height: 100%;
-  margin: 0;
+}
+
+.App {
+  height: 100%;
 }

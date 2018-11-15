@@ -1,7 +1,10 @@
-div.footer {
+.footer {
   text-align: center;
   min-height: 50px;
   background-color: darkgrey;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
 }
 
 h3 {
