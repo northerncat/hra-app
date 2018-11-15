@@ -1,20 +1,47 @@
 import React, { Component } from "react";
-import { Map, TileLayer, LayersControl, ScaleControl } from "react-leaflet";
+import { Map, TileLayer, LayersControl, ScaleControl, GeoJSON } from "react-leaflet";
 import 'leaflet/dist/leaflet.css';
+import L from 'leaflet/dist/leaflet.js';
+import 'leaflet-ajax/dist/leaflet.ajax.js';
 import './style.css';
+// let softbottomLayer = new L.GeoJSON.AJAX("./data/softbottom.geojson");
+// console.log(softbottomLayer);
+import layer from './data/softbottom.geojson';
 const { BaseLayer, Overlay } = LayersControl;
+
+// fetch(layer)
+//   .then(response => response.text())
+//   .then(text => {console.log(text)} );
 
 export default class MapView extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-    lat: 51.505,
-    lng: -0.09,
+    lat: 49.016,
+    lng: -126.131,
     zoom: 10,
     maxZoom: 10, // for ESRI Ocean Base Map, which has the most limited zoom level
     minZoom: 2, // global scale
+    data: null,
     };
+  }
+
+  loadData() {
+    // fetch('./data/softbottom.geojson')
+    fetch(layer)
+      .then(response => response.json())
+      .then(data => console.log(data)) // for debugging
+      .then(data => { this.setState({data: data}) })
+      .catch(err => console.error(layer, err.toString()));
+  }
+
+  getStyle(feature, layer) {
+    return {
+      color: '#006400',
+      weight: 50,
+      opacity: 0.65
+    }
   }
 
   render() {
@@ -34,6 +61,9 @@ export default class MapView extends Component {
                 attribution="Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri"
                 maxZoom="10"/>
             </BaseLayer>
+            <Overlay name="softbottom" checked>
+              <GeoJSON data={this.loadData()} style={this.getStyle}/>
+            </Overlay>
           </LayersControl>
           <ScaleControl position={"bottomleft"} maxWidth={100}/>
         </Map>
