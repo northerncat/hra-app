@@ -3,9 +3,10 @@ import { Map, TileLayer, LayersControl, ScaleControl, GeoJSON } from "react-leaf
 import 'leaflet/dist/leaflet.css';
 // import L from 'leaflet/dist/leaflet.js';
 import './style.css';
+import axios from 'axios';
 const { BaseLayer, Overlay } = LayersControl;
 
-// https://stackoverflow.com/questions/14220321/how-do-i-return-the-response-from-an-asynchronous-call
+
 export default class MapView extends Component {
   constructor(props) {
     super(props);
@@ -20,13 +21,25 @@ export default class MapView extends Component {
     };
 
     const self = this;
-    fetch('/data/softbottom.geojson')
-      .then(response => {
-        return response.json()
-      })
+    fetch('/data/vectors/softbottom.geojson')
+      .then(response => response.json()) // parsing the data as JSON
       .then(data => {
         self.setState({data: data});
       });
+  }
+
+  componentDidMount() {
+    const vectorDir = 'data/vectors';
+    let vectorPaths = [];
+    axios.get(vectorDir)
+      .then(
+        response => {
+          for (var i = 0; i < response.data.length; i++) {
+            vectorPaths.push(vectorDir + '/' + response.data[i]);
+          }
+          console.log(vectorPaths);
+        },
+        error => console.log(error));
   }
 
   getStyle(feature, layer) {
@@ -39,7 +52,10 @@ export default class MapView extends Component {
 
   renderGeoJSON() {
     if (this.state.data != null) {
-      return <GeoJSON key={this.state.data.type} data={this.state.data}/>;
+      return (
+        <Overlay name="softbottom" checked>
+          <GeoJSON key={this.state.data.type} data={this.state.data}/>
+        </Overlay>);
     }
   }
 
@@ -48,22 +64,24 @@ export default class MapView extends Component {
     return (
       <div>
         <Map center={position} zoom={this.state.zoom} style={{height: "650px"}} maxZoom={this.state.maxZoom} minZoom={this.state.minZoom}>
+
           <LayersControl position='topright' collapsed="false">
             <BaseLayer name="Open Street Map" checked>
               <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution="&amp;copy <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors" />
             </BaseLayer>
+
             <BaseLayer name="ESRI Ocean Basemap">
               <TileLayer
                 url="https://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}"
                 attribution="Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri"
                 maxZoom="10"/>
             </BaseLayer>
-            <Overlay name="softbottom" checked>
-              {this.renderGeoJSON()}
-            </Overlay>
+
+            {this.renderGeoJSON()}
           </LayersControl>
+
           <ScaleControl position={"bottomleft"} maxWidth={100}/>
         </Map>
       </div>
