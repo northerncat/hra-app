@@ -18,6 +18,8 @@ export default class MapView extends Component {
     maxZoom: 10, // for ESRI Ocean Base Map, which has the most limited zoom level
     minZoom: 2, // global scale
     data: null,
+    vectorNames: [],
+    vectorData: [],
     };
 
     const self = this;
@@ -26,18 +28,24 @@ export default class MapView extends Component {
       .then(data => {
         self.setState({data: data});
       });
-  }
 
-  componentDidMount() {
     const vectorDir = 'data/vectors';
-    let vectorPaths = [];
     axios.get(vectorDir)
       .then(
         response => {
           for (var i = 0; i < response.data.length; i++) {
-            vectorPaths.push(vectorDir + '/' + response.data[i]);
-          }
-          console.log(vectorPaths);
+            // store vector names without file extension
+            let vectorName = response.data[i].replace(/\.[^/.]+$/, "")
+            self.setState({vectorNames: [...self.state.vectorNames, vectorName]});
+
+            // fetch geojson data and store them in vectorData
+            let vectorPath = vectorDir + '/' + response.data[i];
+            fetch(vectorPath)
+              .then(response => response.json()) // parsing the data as JSON
+              .then(data =>
+                self.setState({vectorData: [...self.state.vectorData, data]})
+              );
+          };
         },
         error => console.log(error));
   }
@@ -47,6 +55,18 @@ export default class MapView extends Component {
       color: '#006400',
       weight: 10,
       opacity: 0.65
+    }
+  }
+
+  renderGeoJsonList() {
+    if (this.state.vectorNames.length === this.state.vectorData.length && this.state.vectorNames.length > 0) {
+      for (var i = 0; i < this.state.vectorNames.length; i++) {
+        return (
+          <Overlay name={this.state.vectorNames[i]} checked>
+            <GeoJSON key={this.state.vectorData[i].type} data={this.state.vectorData[i]}/>
+          </Overlay>
+        );
+      }
     }
   }
 
@@ -79,7 +99,7 @@ export default class MapView extends Component {
                 maxZoom="10"/>
             </BaseLayer>
 
-            {this.renderGeoJSON()}
+            {this.renderGeoJsonList()}
           </LayersControl>
 
           <ScaleControl position={"bottomleft"} maxWidth={100}/>
