@@ -1,20 +1,11 @@
 import React, { Component } from "react";
 import { Map, TileLayer, LayersControl, ScaleControl, GeoJSON } from "react-leaflet";
 import 'leaflet/dist/leaflet.css';
-import L from 'leaflet/dist/leaflet.js';
-import 'leaflet-ajax/dist/leaflet.ajax.js';
+// import L from 'leaflet/dist/leaflet.js';
 import './style.css';
 import layer from './data/softbottom.geojson';
 const { BaseLayer, Overlay } = LayersControl;
 
-function loadData() {
-  // fetch('./data/softbottom.geojson')
-  fetch(layer)
-    .then(response => response.json())
-    .then(data => {return data})
-    .then(data => console.log(data))
-    .catch(err => console.error(layer, err.toString()));
-}
 // https://stackoverflow.com/questions/14220321/how-do-i-return-the-response-from-an-asynchronous-call
 export default class MapView extends Component {
   constructor(props) {
@@ -28,6 +19,15 @@ export default class MapView extends Component {
     minZoom: 2, // global scale
     data: null,
     };
+
+    const self = this;
+    fetch('/data/softbottom.geojson')
+      .then(response => {
+        return response.json()
+      })
+      .then(data => {
+        self.setState({data: data});
+      });
   }
 
   getStyle(feature, layer) {
@@ -36,6 +36,12 @@ export default class MapView extends Component {
       weight: 10,
       opacity: 0.65
     }
+  }
+
+  renderGeoJSON() {
+      if (this.state.data != null) {
+        return <GeoJSON key={this.state.data.type} data={this.state.data}/>;
+      }
   }
 
   render() {
@@ -56,7 +62,7 @@ export default class MapView extends Component {
                 maxZoom="10"/>
             </BaseLayer>
             <Overlay name="softbottom" checked>
-              <GeoJSON data={loadData()} style={this.getStyle}/>
+              {this.renderGeoJSON()}
             </Overlay>
           </LayersControl>
           <ScaleControl position={"bottomleft"} maxWidth={100}/>
