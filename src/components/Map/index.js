@@ -3,7 +3,6 @@ import { Map, TileLayer, LayersControl, ScaleControl, GeoJSON } from "react-leaf
 import 'leaflet/dist/leaflet.css';
 // import L from 'leaflet/dist/leaflet.js';
 import './style.css';
-import layer from './data/softbottom.geojson';
 const { BaseLayer, Overlay } = LayersControl;
 
 // https://stackoverflow.com/questions/14220321/how-do-i-return-the-response-from-an-asynchronous-call
