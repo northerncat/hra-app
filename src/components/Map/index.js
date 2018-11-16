@@ -17,18 +17,10 @@ export default class MapView extends Component {
     zoom: 10,
     maxZoom: 10, // for ESRI Ocean Base Map, which has the most limited zoom level
     minZoom: 2, // global scale
-    data: null,
-    vectorNames: [],
-    vectorData: [],
+    vectors: [],
     };
 
     const self = this;
-    fetch('/data/vectors/softbottom.geojson')
-      .then(response => response.json()) // parsing the data as JSON
-      .then(data => {
-        self.setState({data: data});
-      });
-
     const vectorDir = 'data/vectors';
     axios.get(vectorDir)
       .then(
@@ -36,15 +28,13 @@ export default class MapView extends Component {
           for (var i = 0; i < response.data.length; i++) {
             // store vector names without file extension
             let vectorName = response.data[i].replace(/\.[^/.]+$/, "")
-            self.setState({vectorNames: [...self.state.vectorNames, vectorName]});
 
-            // fetch geojson data and store them in vectorData
+            // fetch geojson data via their path and store the data in vectors
             let vectorPath = vectorDir + '/' + response.data[i];
             fetch(vectorPath)
               .then(response => response.json()) // parsing the data as JSON
-              .then(data =>
-                self.setState({vectorData: [...self.state.vectorData, data]})
-              );
+              .then(data => self.setState(
+                {vectors: [...self.state.vectors, data]}))
           };
         },
         error => console.log(error));
@@ -53,29 +43,22 @@ export default class MapView extends Component {
   getStyle(feature, layer) {
     return {
       color: '#006400',
-      weight: 10,
+      weight: 1,
       opacity: 0.65
     }
   }
 
-  renderGeoJsonList() {
-    if (this.state.vectorNames.length === this.state.vectorData.length && this.state.vectorNames.length > 0) {
-      for (var i = 0; i < this.state.vectorNames.length; i++) {
-        return (
-          <Overlay name={this.state.vectorNames[i]} checked>
-            <GeoJSON key={this.state.vectorData[i].type} data={this.state.vectorData[i]}/>
-          </Overlay>
-        );
-      }
-    }
-  }
-
-  renderGeoJSON() {
-    if (this.state.data != null) {
+  renderGeoJSONs() {
+    let vectors = this.state.vectors;
+    if (vectors.length > 0) {
+      console.log(vectors);
       return (
-        <Overlay name="softbottom" checked>
-          <GeoJSON key={this.state.data.type} data={this.state.data}/>
-        </Overlay>);
+        vectors.map(vectorData => (
+          <Overlay name={vectorData.name} checked>
+            <GeoJSON key={vectorData.type} data={vectorData} style={this.getStyle()}/>
+          </Overlay>
+        ))
+      )
     }
   }
 
@@ -99,7 +82,7 @@ export default class MapView extends Component {
                 maxZoom="10"/>
             </BaseLayer>
 
-            {this.renderGeoJsonList()}
+            {this.renderGeoJSONs()}
           </LayersControl>
 
           <ScaleControl position={"bottomleft"} maxWidth={100}/>
