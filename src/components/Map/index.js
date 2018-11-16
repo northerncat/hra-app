@@ -1,26 +1,48 @@
 import React, { Component } from "react";
-import { Map, TileLayer, LayersControl, ScaleControl } from "react-leaflet";
+import { Map, TileLayer, LayersControl, ScaleControl, GeoJSON } from "react-leaflet";
 import 'leaflet/dist/leaflet.css';
+import L from 'leaflet/dist/leaflet.js';
+import 'leaflet-ajax/dist/leaflet.ajax.js';
 import './style.css';
-const { BaseLayer } = LayersControl;
+import layer from './data/softbottom.geojson';
+const { BaseLayer, Overlay } = LayersControl;
 
+function loadData() {
+  // fetch('./data/softbottom.geojson')
+  fetch(layer)
+    .then(response => response.json())
+    .then(data => {return data})
+    .then(data => console.log(data))
+    .catch(err => console.error(layer, err.toString()));
+}
+// https://stackoverflow.com/questions/14220321/how-do-i-return-the-response-from-an-asynchronous-call
 export default class MapView extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-    lat: 51.505,
-    lng: -0.09,
+    lat: 49.016,
+    lng: -126.131,
     zoom: 10,
-    maxZoom: 10 // for ESRI Ocean Base Map
+    maxZoom: 10, // for ESRI Ocean Base Map, which has the most limited zoom level
+    minZoom: 2, // global scale
+    data: null,
     };
+  }
+
+  getStyle(feature, layer) {
+    return {
+      color: '#006400',
+      weight: 10,
+      opacity: 0.65
+    }
   }
 
   render() {
     let position = [this.state.lat, this.state.lng];
     return (
       <div>
-        <Map center={position} zoom={this.state.zoom} style={{height: "650px"}} maxZoom={this.state.maxZoom}>
+        <Map center={position} zoom={this.state.zoom} style={{height: "650px"}} maxZoom={this.state.maxZoom} minZoom={this.state.minZoom}>
           <LayersControl position='topright' collapsed="false">
             <BaseLayer name="Open Street Map" checked>
               <TileLayer
@@ -33,6 +55,9 @@ export default class MapView extends Component {
                 attribution="Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri"
                 maxZoom="10"/>
             </BaseLayer>
+            <Overlay name="softbottom" checked>
+              <GeoJSON data={loadData()} style={this.getStyle}/>
+            </Overlay>
           </LayersControl>
           <ScaleControl position={"bottomleft"} maxWidth={100}/>
         </Map>
