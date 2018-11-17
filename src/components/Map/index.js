@@ -26,9 +26,6 @@ export default class MapView extends Component {
       .then(
         response => {
           for (var i = 0; i < response.data.length; i++) {
-            // store vector names without file extension
-            let vectorName = response.data[i].replace(/\.[^/.]+$/, "")
-
             // fetch geojson data via their path and store the data in vectors
             let vectorPath = vectorDir + '/' + response.data[i];
             fetch(vectorPath)
@@ -51,11 +48,10 @@ export default class MapView extends Component {
   renderGeoJSONs() {
     let vectors = this.state.vectors;
     if (vectors.length > 0) {
-      console.log(vectors);
       return (
         vectors.map(vectorData => (
-          <Overlay name={vectorData.name} checked>
-            <GeoJSON key={vectorData.type} data={vectorData} style={this.getStyle()}/>
+          <Overlay key={vectorData.name} name={vectorData.name} checked>
+            <GeoJSON key={vectorData.name} data={vectorData} style={this.getStyle()}/>
           </Overlay>
         ))
       )
