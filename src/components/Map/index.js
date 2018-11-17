@@ -8,7 +8,7 @@ import axios from 'axios';
 const { BaseLayer, Overlay } = LayersControl;
 
 
-export default class hraMap extends Component {
+export default class Hramap extends Component {
   constructor(props) {
     super(props);
 
@@ -17,10 +17,10 @@ export default class hraMap extends Component {
     lng: -126.131,
     maxZoom: 13, // for ESRI Ocean Base Map, which has the most limited zoom level
     minZoom: 2, // global scale
+    maxBbox: [[-90, -180], [90, 180]], // default is the global view
     vectors: [],
     lats: [],
     lngs: [],
-    maxBbox: [[-90, -180], [90, 180]],
     };
 
     const self = this;
@@ -47,14 +47,6 @@ export default class hraMap extends Component {
         error => console.log(error));
   }
 
-  getStyle(feature, layer) {
-    return {
-      color: '#006400',
-      weight: 1,
-      opacity: 0.65
-    }
-  }
-
   getMaxBbox() {
     if (this.state.lats.length > 0 && this.state.lngs.length > 0) {
       // calc the min and max lng and lat
@@ -66,31 +58,40 @@ export default class hraMap extends Component {
     }
   }
 
+  // create choropleth on each feature based on the risk value
+  getChoroplethColor(value) {
+    return (value > 2  ? '#aa0101' :
+            value > 1  ? '#ef5151' :
+            value > 0  ? '#efbaba' :
+                         '#f9f9f9');
+  }
+
+  getStyle(feature) {
+    return {
+      fillColor: this.getChoroplethColor(feature.properties.VALUE),
+      weight: 1,
+      opacity: 1,
+      color: 'white',
+      dashArray: '3',
+      fillOpacity: 0.7
+    };
+  }
+
   renderGeoJSONs() {
     let vectors = this.state.vectors;
-    // if (vectors.length > 0) {
-    //   vectors.map(vectorData => {  !!! use for loop instead
-    //     return (
-    //       <Overlay key={vectorData.name} name={vectorData.name} checked>
-    //         <GeoJSON key={vectorData.name} data={vectorData} style={this.getStyle()}/>
-    //       </Overlay>
-    //     );
-    //   });
-    // }
     if (vectors.length > 0) {
       return (
         vectors.map(vectorData => (
           <Overlay key={vectorData.name} name={vectorData.name} checked>
-            <GeoJSON key={vectorData.name} data={vectorData} style={this.getStyle()}/>
+            <GeoJSON key={vectorData.name} data={vectorData} style={this.getStyle}/>
           </Overlay>
         ))
       );
     }
   }
 
-  // center={position} zoom={this.state.zoom}
   render() {
-    let position = [this.state.lat, this.state.lng];
+    // let position = [this.state.lat, this.state.lng];
     return (
       <div>
         <Map id='mapdiv' maxZoom={this.state.maxZoom} minZoom={this.state.minZoom} bounds={this.state.maxBbox}>
