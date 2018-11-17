@@ -1,5 +1,5 @@
-.leaflet-container {
-  height: 450px;
+#mapdiv {
+  height: 650px;
   background-color: #AAD3DF;
   border-bottom: 1px solid gray;
 }
