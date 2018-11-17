@@ -7,7 +7,7 @@ import axios from 'axios';
 const { BaseLayer, Overlay } = LayersControl;
 
 
-export default class MapView extends Component {
+export default class hraMap extends Component {
   constructor(props) {
     super(props);
 
