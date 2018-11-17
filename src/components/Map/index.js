@@ -15,14 +15,14 @@ export default class Hramap extends Component {
     super(props);
 
     this.state = {
-    lat: 49.016,
-    lng: -126.131,
+    coords: 'Move mouse over the map to display coordinates.',
     maxZoom: 13, // for ESRI Ocean Base Map, which has the most limited zoom level
     minZoom: 2, // global scale
     maxBbox: [[-90, -180], [90, 180]], // default is the global view
     vectors: [],
     lats: [],
     lngs: [],
+    layerName: null,
     };
 
     const self = this;
@@ -60,9 +60,8 @@ export default class Hramap extends Component {
     }
   }
 
-  getStyle() {
+  getStyle() { // basic style for polygons
     return {
-      fillColor: '#F28F3B',
       weight: 1,
       opacity: 1,
       color: 'white',
@@ -86,7 +85,7 @@ export default class Hramap extends Component {
     let geojsons = this.state.vectors;
     if (geojsons.length > 0) {
       return (
-        geojsons.map(geojson => (
+        geojsons.map((geojson, index) => (
           <Overlay key={geojson.name} name={geojson.name} checked>
             <Choropleth
               data={{type: 'FeatureCollection', features: geojson.features}}
@@ -103,11 +102,16 @@ export default class Hramap extends Component {
     }
   }
 
+  displayMouseCoords(e) {
+    let coords = "Latitude: " + e.latlng.lat.toFixed(4) + ", Longitude: "+e.latlng.lng.toFixed(4);
+    this.setState({coords: coords});
+  }
+
   render() {
-    // let position = [this.state.lat, this.state.lng];
     return (
       <div>
-        <Map id='mapdiv' maxZoom={this.state.maxZoom} minZoom={this.state.minZoom} bounds={this.state.maxBbox}>
+        <Map id='mapdiv' maxZoom={this.state.maxZoom} minZoom={this.state.minZoom} bounds={this.state.maxBbox} onMouseMove={this.displayMouseCoords.bind(this)}>
+          <div id='coords'>{this.state.coords}</div>
 
           <LayersControl position='topright' collapsed='false'>
             <BaseLayer name='Open Street Map' checked>
@@ -115,7 +119,6 @@ export default class Hramap extends Component {
                 url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
                 attribution='&amp;copy <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors' />
             </BaseLayer>
-
             <BaseLayer name='ESRI Ocean Basemap'>
               <TileLayer
                 url='https://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}'
@@ -123,7 +126,6 @@ export default class Hramap extends Component {
             </BaseLayer>
 
             {this.renderGeojsons()}
-
           </LayersControl>
 
           <ScaleControl position={'bottomleft'} maxWidth={120}/>
