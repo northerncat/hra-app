@@ -15,7 +15,7 @@ export default class hraMap extends Component {
     this.state = {
     lat: 49.016,
     lng: -126.131,
-    maxZoom: 10, // for ESRI Ocean Base Map, which has the most limited zoom level
+    maxZoom: 13, // for ESRI Ocean Base Map, which has the most limited zoom level
     minZoom: 2, // global scale
     vectors: [],
     lats: [],
@@ -69,7 +69,7 @@ export default class hraMap extends Component {
   renderGeoJSONs() {
     let vectors = this.state.vectors;
     // if (vectors.length > 0) {
-    //   vectors.map(vectorData => {
+    //   vectors.map(vectorData => {  !!! use for loop instead
     //     return (
     //       <Overlay key={vectorData.name} name={vectorData.name} checked>
     //         <GeoJSON key={vectorData.name} data={vectorData} style={this.getStyle()}/>
@@ -105,8 +105,7 @@ export default class hraMap extends Component {
             <BaseLayer name='ESRI Ocean Basemap'>
               <TileLayer
                 url='https://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}'
-                attribution='Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri'
-                maxZoom='10'/>
+                attribution='Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri'/>
             </BaseLayer>
 
             {this.renderGeoJSONs()}
