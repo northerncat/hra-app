@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
-import { Map, TileLayer, LayersControl, ScaleControl, GeoJSON } from 'react-leaflet';
-import { bbox } from '@turf/turf'
-import 'leaflet/dist/leaflet.css';
+import { Map, TileLayer, LayersControl, ScaleControl } from 'react-leaflet';
 // import L from 'leaflet/dist/leaflet.js';
-import './style.css';
+import { bbox } from '@turf/turf'
+import Choropleth from 'react-leaflet-choropleth';
 import axios from 'axios';
-const { BaseLayer, Overlay } = LayersControl;
 
+import 'leaflet/dist/leaflet.css';
+import './style.css';
+
+const { BaseLayer, Overlay } = LayersControl;
 
 export default class Hramap extends Component {
   constructor(props) {
@@ -58,17 +60,9 @@ export default class Hramap extends Component {
     }
   }
 
-  // create choropleth on each feature based on the risk value
-  getChoroplethColor(value) {
-    return (value > 2  ? '#aa0101' :
-            value > 1  ? '#ef5151' :
-            value > 0  ? '#efbaba' :
-                         '#f9f9f9');
-  }
-
-  getStyle(feature) {
+  getStyle() {
     return {
-      fillColor: this.getChoroplethColor(feature.properties.VALUE),
+      fillColor: '#F28F3B',
       weight: 1,
       opacity: 1,
       color: 'white',
@@ -77,13 +71,32 @@ export default class Hramap extends Component {
     };
   }
 
-  renderGeoJSONs() {
-    let vectors = this.state.vectors;
-    if (vectors.length > 0) {
+  popupText(feature, layer) {
+    let popupText = [];
+    const properties = feature.properties;
+    if (properties){
+      for (var field in properties){
+          popupText.push(field + ": " + properties[field]);
+      }
+    }
+    layer.bindPopup(popupText.join("<br/>"));
+  }
+
+  renderGeojsons() {
+    let geojsons = this.state.vectors;
+    if (geojsons.length > 0) {
       return (
-        vectors.map(vectorData => (
-          <Overlay key={vectorData.name} name={vectorData.name} checked>
-            <GeoJSON key={vectorData.name} data={vectorData} style={this.getStyle}/>
+        geojsons.map(geojson => (
+          <Overlay key={geojson.name} name={geojson.name} checked>
+            <Choropleth
+              data={{type: 'FeatureCollection', features: geojson.features}}
+              valueProperty={(feature) => feature.properties.VALUE}
+              scale={['#efbaba', '#aa0101']}
+              steps={3}
+              mode='e'
+              style={this.getStyle()}
+              onEachFeature={(feature, layer) => this.popupText(feature, layer)}
+            />
           </Overlay>
         ))
       );
@@ -109,11 +122,11 @@ export default class Hramap extends Component {
                 attribution='Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri'/>
             </BaseLayer>
 
-            {this.renderGeoJSONs()}
+            {this.renderGeojsons()}
 
           </LayersControl>
 
-          <ScaleControl position={'bottomleft'} maxWidth={100}/>
+          <ScaleControl position={'bottomleft'} maxWidth={120}/>
         </Map>
       </div>
     );
