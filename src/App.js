@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import Navi from './components/Navi';
 import Footer from './components/Footer';
-import Riskmap from './components/Map';
+import HraMap from './components/Map';
 
 class App extends Component {
   constructor(props) {
@@ -15,7 +15,7 @@ class App extends Component {
     return (
       <div className="App">
         <Navi title={this.state.title}/>
-        <Riskmap />
+        <HraMap />
         <Footer />
       </div>
     );

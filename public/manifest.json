@@ -1,9 +1,9 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "HRA App",
+  "name": "Habitat Risk Assessment",
   "icons": [
     {
-      "src": "natcap-icon.ico",
+      "src": "data/natcap-icon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     }
