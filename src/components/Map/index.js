@@ -22,27 +22,36 @@ export default class Hramap extends Component {
     vectors: [],
     lats: [],
     lngs: [],
-    layerName: null,
     };
 
     const self = this;
     const vectorDir = 'data/vectors';
+    let lats = [];
+    let lngs = [];
+    let vectorData = [];
     axios.get(vectorDir)
       .then(
         response => {
+          self.setState({vectorLength: response.data.length});
           for (var i = 0; i < response.data.length; i++) {
             // fetch geojson data via their path and store the data in vectors
             let vectorPath = vectorDir + '/' + response.data[i];
             fetch(vectorPath)
               .then(response => response.json()) // parsing the data as JSON
               .then(data => {
-                self.setState({vectors: [...self.state.vectors, data]});
-
                 // Add geojson bounding box to lat and long arrays
                 let vectorBbox = bbox(data);
-                self.setState({lngs: [...self.state.lngs, vectorBbox[0], vectorBbox[2]]});
-                self.setState({lats: [...self.state.lats, vectorBbox[1], vectorBbox[3]]});
-                self.getMaxBbox();
+                vectorData.push(data);
+                lngs.push(...[vectorBbox[0], vectorBbox[2]]);
+                lats.push(...[vectorBbox[1], vectorBbox[3]]);
+
+                // only set state when all vectors are loaded
+                if (vectorData.length === self.state.vectorLength) {
+                  self.setState({vectors: [...self.state.vectors, ...vectorData]});
+                  self.setState({lngs: [...self.state.lngs, ...lngs]});
+                  self.setState({lats: [...self.state.lats, ...lats]});
+                  self.getMaxBbox();
+                }
               })
           };
         },
