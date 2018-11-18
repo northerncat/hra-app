@@ -103,7 +103,7 @@ export default class Hramap extends Component {
   }
 
   displayMouseCoords(e) {
-    let coords = "Latitude: " + e.latlng.lat.toFixed(4) + ", Longitude: "+e.latlng.lng.toFixed(4);
+    let coords = "Lat: " + e.latlng.lat.toFixed(5) + ", Long: "+e.latlng.lng.toFixed(5);
     this.setState({coords: coords});
   }
 
@@ -128,7 +128,7 @@ export default class Hramap extends Component {
             {this.renderGeojsons()}
           </LayersControl>
 
-          <ScaleControl position={'bottomleft'} maxWidth={120}/>
+          <ScaleControl position={'bottomleft'} maxWidth={100}/>
         </Map>
       </div>
     );

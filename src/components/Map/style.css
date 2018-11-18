@@ -7,12 +7,13 @@
 #coords {
   background: #fff;
   background: rgba(255, 255, 255);
-
   position: absolute;
-  top: 0;
-  right: 5%;
+  border: 1px solid gray;
+  bottom: 4px;
+  left: 102px;
   z-index: 99999;
   display: block;
   padding: 3px;
-  opacity: 0.8;
+  opacity: 0.65;
+  font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
 }
