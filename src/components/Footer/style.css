@@ -12,3 +12,12 @@ h3 {
   vertical-align: middle;
   line-height: normal;
 }
+
+a {
+  text-decoration: none;
+  color: black;
+}
+
+a:hover {
+  text-decoration: underline;
+}
