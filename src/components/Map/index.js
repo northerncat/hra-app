@@ -5,6 +5,7 @@ import { bbox } from '@turf/turf'
 import Choropleth from 'react-leaflet-choropleth';
 import axios from 'axios';
 
+import 'font-awesome/css/font-awesome.min.css';
 import 'leaflet/dist/leaflet.css';
 import './style.css';
 
@@ -22,6 +23,7 @@ export default class Hramap extends Component {
     vectors: [],
     lats: [],
     lngs: [],
+    vectorLength: null,
     };
 
     const self = this;
@@ -50,7 +52,7 @@ export default class Hramap extends Component {
                   self.setState({vectors: [...self.state.vectors, ...vectorData]});
                   self.setState({lngs: [...self.state.lngs, ...lngs]});
                   self.setState({lats: [...self.state.lats, ...lats]});
-                  self.getMaxBbox();
+                  self.fitToMaxBbox();
                 }
               })
           };
@@ -58,7 +60,11 @@ export default class Hramap extends Component {
         error => console.log(error));
   }
 
-  getMaxBbox() {
+  componentDidMount() {
+    this.mapApi = this.refs.mapRef.leafletElement; // <= this is the Leaflet Map object
+  }
+
+  fitToMaxBbox() {
     if (this.state.lats.length > 0 && this.state.lngs.length > 0) {
       // calc the min and max lng and lat
       var minlat = Math.min(...this.state.lats),
@@ -66,6 +72,7 @@ export default class Hramap extends Component {
       var minlng = Math.min(...this.state.lngs),
           maxlng = Math.max(...this.state.lngs);
       this.setState({maxBbox: [[minlat, minlng],[maxlat, maxlng]]});
+    this.mapApi.fitBounds(this.state.maxBbox);
     }
   }
 
@@ -120,12 +127,21 @@ export default class Hramap extends Component {
     this.setState({coords: 'Hover mouse over the map to display coordinates.'});
   }
 
+  zoomToMaxBbox(e) {
+    this.mapApi.fitBounds(this.state.maxBbox);
+  }
+
   render() {
     return (
       <div>
-        <Map id='mapdiv' maxZoom={this.state.maxZoom} minZoom={this.state.minZoom}
-          bounds={this.state.maxBbox} onMouseMove={this.displayMouseCoords.bind(this)}
+        <Map ref='mapRef' id='mapdiv' maxZoom={this.state.maxZoom} minZoom={this.state.minZoom}
+          onMouseMove={this.displayMouseCoords.bind(this)}
           onMouseOut={this.removeCoords.bind(this)}>
+
+        <button id='zoomBtn' className='leaflet-bar leaflet-control'
+          onClick={this.zoomToMaxBbox.bind(this)}>
+          <i className="fa fa-crosshairs fa-lg"/>
+        </button>
 
           <div id='coords'>{this.state.coords}</div>
 
