@@ -15,7 +15,7 @@ export default class Hramap extends Component {
     super(props);
 
     this.state = {
-    coords: 'Move mouse over the map to display coordinates.',
+    coords: 'Hover mouse over the map to display coordinates.',
     maxZoom: 13, // for ESRI Ocean Base Map, which has the most limited zoom level
     minZoom: 2, // global scale
     maxBbox: [[-90, -180], [90, 180]], // default is the global view
@@ -116,17 +116,25 @@ export default class Hramap extends Component {
     this.setState({coords: coords});
   }
 
+  removeCoords(e) {
+    this.setState({coords: 'Hover mouse over the map to display coordinates.'});
+  }
+
   render() {
     return (
       <div>
-        <Map id='mapdiv' maxZoom={this.state.maxZoom} minZoom={this.state.minZoom} bounds={this.state.maxBbox} onMouseMove={this.displayMouseCoords.bind(this)}>
+        <Map id='mapdiv' maxZoom={this.state.maxZoom} minZoom={this.state.minZoom}
+          bounds={this.state.maxBbox} onMouseMove={this.displayMouseCoords.bind(this)}
+          onMouseOut={this.removeCoords.bind(this)}>
+
           <div id='coords'>{this.state.coords}</div>
 
-          <LayersControl position='topright' collapsed='false'>
-            <BaseLayer name='Open Street Map' checked>
+          <LayersControl position='topright' collapsed={false}>
+            <BaseLayer name='Open Street Map' checked={true}>
               <TileLayer
                 url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-                attribution='&amp;copy <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors' />
+                attribution='&amp;copy <a href=&quot;http://osm.org/copyright&quot;>
+                OpenStreetMap</a> contributors' />
             </BaseLayer>
             <BaseLayer name='ESRI Ocean Basemap'>
               <TileLayer

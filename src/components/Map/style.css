@@ -16,4 +16,18 @@
   padding: 3px;
   opacity: 0.65;
   font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+  font-size: 14px;
+}
+
+.leaflet-container .leaflet-control-layers-expanded {
+  font-size: 14px;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.leaflet-container .leaflet-control-attribution, .leaflet-container .leaflet-control-scale {
+  font-size: 14px
+}
+
+.leaflet-control-scale-line {
+  font-size: 14px
 }
