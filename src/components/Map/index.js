@@ -165,12 +165,16 @@ export default class Hramap extends Component {
           </ul>
         </Control>
 
-        <button id='zoomBtn' className='leaflet-bar leaflet-control'
-          onClick={this.zoomToMaxBbox.bind(this)}>
-          <i className="fa fa-crosshairs fa-lg"/>
-        </button>
+        <Control position='topleft'>
+          <button id='zoomBtn'
+            onClick={this.zoomToMaxBbox.bind(this)}>
+            <i className="fa fa-crosshairs fa-lg"/>
+          </button>
+        </Control>
 
+        <Control position='bottomleft'>
           <div id='coords'>{this.state.coords}</div>
+        </Control>
 
           <LayersControl position='topright' collapsed={false}>
             <BaseLayer name='Open Street Map' checked={true}>
