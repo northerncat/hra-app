@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import { Map, TileLayer, LayersControl, ScaleControl} from 'react-leaflet';
+import { Map, TileLayer, LayersControl, ScaleControl, Marker } from 'react-leaflet';
 // import L from 'leaflet/dist/leaflet.js';
 import { bbox } from '@turf/turf'
 import Choropleth from 'react-leaflet-choropleth';
 import axios from 'axios';
 import Control from 'react-leaflet-control';
+import parse_georaster from 'georaster';
+import GeoRasterLayer from 'georaster-layer-for-leaflet';
 
 import 'font-awesome/css/font-awesome.min.css';
 import 'leaflet/dist/leaflet.css';
@@ -25,8 +27,13 @@ export default class Hramap extends Component {
     lats: [],
     lngs: [],
     vectorLength: null,
+    rasters: new Object(),
+    rasterLength: null,
     };
+  }
 
+  componentDidMount() {
+    this.mapApi = this.refs.mapRef.leafletElement; // the Leaflet Map object
     const self = this;
     const vectorDir = 'data/vectors';
     let lats = [];
@@ -59,10 +66,38 @@ export default class Hramap extends Component {
           };
         },
         error => console.log(error));
-  }
 
-  componentDidMount() {
-    this.mapApi = this.refs.mapRef.leafletElement; // <= this is the Leaflet Map object
+    const rasterDir = 'data/rasters';
+    let rasterData = new Object();
+    let geotiffPath = 'data/rasters/risk_eelgrass.tif';
+    axios.get(rasterDir)
+      .then(
+        response => {
+          self.setState({rasterLength: response.data.length});
+          for (var i = 0; i < response.data.length; i++) {
+            let rasterFilename = response.data[i]
+            let rasterPath = rasterDir + '/' + rasterFilename;
+            fetch(rasterPath).then(response =>
+              response.arrayBuffer()).then(arrayBuffer => {
+                parse_georaster(arrayBuffer).then(georaster => {
+                  let geoRasterLayer = new GeoRasterLayer({
+                      georaster: georaster,
+                      opacity: 0.7,
+                      pixelValueToColorFn: value =>
+                        value > 2  ? '#aa0101' :
+                        value > 1  ? '#cc5d5d' :
+                        value > 0  ? '#efbaba' :
+                                     'rgb(255, 255, 255, 0)'}) // gradient color
+                  rasterData[rasterFilename.replace(/\.[^/.]+$/, "")] = geoRasterLayer;
+                  if (Object.keys(rasterData).length === this.state.rasterLength) {
+                    self.setState({rasters: rasterData});
+                  }
+              })
+            });
+
+          }
+        },
+      error => console.log(error));
   }
 
   fitToMaxBbox() {
@@ -117,6 +152,24 @@ export default class Hramap extends Component {
         ))
       );
     }
+  }
+
+  renderGeotiffs() {
+    const rasters = this.state.rasters;
+    let rasterOverlays = [];
+    if (Object.keys(rasters).length === this.state.rasterLength) {
+      for (var rasterName in rasters) {
+        let rasterLayer = rasters[rasterName];
+        rasterOverlays.push(
+          <Overlay key={rasterName} name={rasterName} checked>
+            <Marker position={[51.505,-0.09]}></Marker>
+          </Overlay>
+          )
+        rasterLayer.addTo(this.mapApi);
+        // layerControl.addOverlay(imageOverlayNew, newLayerName);
+      }
+    }
+    return rasterOverlays
   }
 
   displayMouseCoords(e) {
@@ -190,6 +243,9 @@ export default class Hramap extends Component {
             </BaseLayer>
 
             {this.renderGeojsons()}
+
+            {this.renderGeotiffs()}
+
           </LayersControl>
 
           <ScaleControl position={'bottomleft'} maxWidth={100}/>
