@@ -27,8 +27,9 @@ export default class Hramap extends Component {
     lats: [],
     lngs: [],
     vectorLength: null,
-    rasters: new Object(),
+    rasters: {},
     rasterLength: null,
+    rastersOnMap: [];
     };
   }
 
@@ -76,7 +77,7 @@ export default class Hramap extends Component {
   loadRasters() {
     const self = this;
     const rasterDir = 'data/rasters';
-    let rasterData = new Object();
+    let rasterData = {};
     Axios.get(rasterDir)
       .then(
         response => {
