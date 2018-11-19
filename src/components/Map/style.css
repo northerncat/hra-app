@@ -6,7 +6,6 @@
 
 #coords {
   background: #fff;
-  background: rgba(255, 255, 255);
   position: absolute;
   border: 1px solid gray;
   bottom: 4px;
@@ -36,18 +35,14 @@
 
 #zoomBtn {
   background-color: rgb(255, 255, 255);
-  border-left-color: rgba(0, 0, 0, 0.2);
+  border-color: rgba(0, 0, 0, 0.2);
   border-left-style: solid;
   border-left-width: 1px;
-  border-right-color: rgba(0, 0, 0, 0.2);
   border-right-style: solid;
   border-right-width: 1px;
-  border-top-color: rgba(0, 0, 0, 0.2);
-  border-top-left-radius: 4px;
-  border-top-right-radius: 3px;
+  border-top-radius: 3px;
   border-top-style: solid;
   border-top-width: 1px;
-  border-bottom-color: rgba(0, 0, 0, 0.2);
   cursor: pointer;
   display: block;
   font-weight: 400;
@@ -67,4 +62,30 @@
 
 #zoomBtn:active {
   cursor: grabbing;
+}
+
+ul.legend {
+  border-radius: 3px;
+  width: 140px;
+  background: #fff;
+  opacity: 0.80;
+  border: 3px rgba(0, 0, 0, 0.2);
+  padding: 5px 15px;
+  border: 1px solid gray;
+  list-style-type: none;
+}
+
+.legendSvg {
+  fill-opacity: 0.9;
+  width: 30px;
+  height: 20px;
+  border: 1px solid gray;
+  display: inline-block;
+  vertical-align: middle
+}
+
+.legendText {
+  padding-left: 5px;
+  display: inline-block;
+  font-size: 14px;
 }

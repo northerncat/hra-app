@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { Map, TileLayer, LayersControl, ScaleControl } from 'react-leaflet';
+import { Map, TileLayer, LayersControl, ScaleControl} from 'react-leaflet';
 // import L from 'leaflet/dist/leaflet.js';
 import { bbox } from '@turf/turf'
 import Choropleth from 'react-leaflet-choropleth';
 import axios from 'axios';
+import Control from 'react-leaflet-control';
 
 import 'font-awesome/css/font-awesome.min.css';
 import 'leaflet/dist/leaflet.css';
@@ -131,12 +132,38 @@ export default class Hramap extends Component {
     this.mapApi.fitBounds(this.state.maxBbox);
   }
 
+  displayLegend() {
+    const riskColors = {
+      'High Risk': '#aa0101',
+      'Medium Risk': '#cc5d5d',
+      'Low Risk':'#efbaba'
+    };
+    let riskLegend = [];
+    for (var risk in riskColors) {
+      riskLegend.push(
+        <li key={risk}>
+            <svg className='legendSvg'>
+              <rect className='legendSvg' fill={riskColors[risk]}/>
+            </svg>
+            <span className='legendText'>{risk}</span>
+        </li>
+        )
+    }
+    return riskLegend;
+  }
+
   render() {
     return (
       <div>
         <Map ref='mapRef' id='mapdiv' maxZoom={this.state.maxZoom} minZoom={this.state.minZoom}
           onMouseMove={this.displayMouseCoords.bind(this)}
-          onMouseOut={this.removeCoords.bind(this)}>
+          onMouseOut={this.removeCoords.bind(this)} className='map'>
+
+        <Control position='bottomright'>
+          <ul className='legend'>
+            {this.displayLegend()}
+          </ul>
+        </Control>
 
         <button id='zoomBtn' className='leaflet-bar leaflet-control'
           onClick={this.zoomToMaxBbox.bind(this)}>
@@ -167,3 +194,5 @@ export default class Hramap extends Component {
     );
   }
 }
+
+
