@@ -1,12 +1,12 @@
+import Axios from 'axios';
+import { bbox } from '@turf/turf'
+import Choropleth from 'react-leaflet-choropleth';
+import Control from 'react-leaflet-control';
+import GeoRasterLayer from 'georaster-layer-for-leaflet';
+import parse_georaster from 'georaster';
 import React, { Component } from 'react';
 import { Map, TileLayer, LayersControl, ScaleControl, Marker } from 'react-leaflet';
 // import L from 'leaflet/dist/leaflet.js';
-import { bbox } from '@turf/turf'
-import Choropleth from 'react-leaflet-choropleth';
-import axios from 'axios';
-import Control from 'react-leaflet-control';
-import parse_georaster from 'georaster';
-import GeoRasterLayer from 'georaster-layer-for-leaflet';
 
 import 'font-awesome/css/font-awesome.min.css';
 import 'leaflet/dist/leaflet.css';
@@ -34,16 +34,21 @@ export default class Hramap extends Component {
 
   componentDidMount() {
     this.mapApi = this.refs.mapRef.leafletElement; // the Leaflet Map object
+    this.loadVectors();
+    this.loadRasters();
+  }
+
+  loadVectors() {
     const self = this;
     const vectorDir = 'data/vectors';
     let lats = [];
     let lngs = [];
     let vectorData = [];
-    axios.get(vectorDir)
+    Axios.get(vectorDir)
       .then(
         response => {
           self.setState({vectorLength: response.data.length});
-          for (var i = 0; i < response.data.length; i++) {
+          for (let i = 0; i < response.data.length; i++) {
             // fetch geojson data via their path and store the data in vectors
             let vectorPath = vectorDir + '/' + response.data[i];
             fetch(vectorPath)
@@ -66,15 +71,17 @@ export default class Hramap extends Component {
           }
         },
         error => console.log(error));
+  }
 
+  loadRasters() {
+    const self = this;
     const rasterDir = 'data/rasters';
     let rasterData = new Object();
-    let geotiffPath = 'data/rasters/risk_eelgrass.tif';
-    axios.get(rasterDir)
+    Axios.get(rasterDir)
       .then(
         response => {
           self.setState({rasterLength: response.data.length});
-          for (var i = 0; i < response.data.length; i++) {
+          for (let i = 0; i < response.data.length; i++) {
             let rasterFilename = response.data[i]
             let rasterPath = rasterDir + '/' + rasterFilename;
             fetch(rasterPath).then(response =>
@@ -102,9 +109,9 @@ export default class Hramap extends Component {
   fitToMaxBbox() {
     if (this.state.lats.length > 0 && this.state.lngs.length > 0) {
       // calc the min and max lng and lat
-      var minlat = Math.min(...this.state.lats),
+      let minlat = Math.min(...this.state.lats),
           maxlat = Math.max(...this.state.lats);
-      var minlng = Math.min(...this.state.lngs),
+      let minlng = Math.min(...this.state.lngs),
           maxlng = Math.max(...this.state.lngs);
       this.setState({maxBbox: [[minlat, minlng],[maxlat, maxlng]]});
     this.mapApi.fitBounds(this.state.maxBbox);
@@ -125,7 +132,7 @@ export default class Hramap extends Component {
     let popupText = [];
     const properties = feature.properties;
     if (properties){
-      for (var field in properties){
+      for (let field in properties){
           popupText.push(field + ": " + properties[field]);
       }
     }
@@ -157,7 +164,7 @@ export default class Hramap extends Component {
     const rasters = this.state.rasters;
     let rasterOverlays = [];
     if (Object.keys(rasters).length === this.state.rasterLength) {
-      for (var rasterName in rasters) {
+      for (let rasterName in rasters) {
         let rasterLayer = rasters[rasterName];
         rasterOverlays.push(
           <Overlay key={rasterName} name={rasterName} checked>
@@ -191,7 +198,7 @@ export default class Hramap extends Component {
       'Low Risk':'#efbaba'
     };
     let riskLegend = [];
-    for (var risk in riskColors) {
+    for (let risk in riskColors) {
       riskLegend.push(
         <li key={risk}>
             <svg className='legendSvg'>
