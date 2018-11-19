@@ -29,7 +29,7 @@ export default class Hramap extends Component {
     vectorLength: null,
     rasters: {},
     rasterLength: null,
-    rastersOnMap: [];
+    rastersOnMap: [],
     };
   }
 
@@ -172,11 +172,14 @@ export default class Hramap extends Component {
             <Marker position={[51.505,-0.09]}></Marker>
           </Overlay>
           )
-        rasterLayer.addTo(this.mapApi);
-        rasterLayer.removeFrom(this.mapApi);
+        rasterLayer.addTo(this.mapApi); // rasterLayer.removeFrom(this.mapApi);
+        if (! this.state.rastersOnMap.includes(rasterName)) {
+          this.setState({rastersOnMap: [...this.state.rastersOnMap, rasterName]});
+        }
       }
     }
-    return rasterOverlays
+    console.log(this.state.rastersOnMap)
+    return rasterOverlays;
   }
 
   displayMouseCoords(e) {
