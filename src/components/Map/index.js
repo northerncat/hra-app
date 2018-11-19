@@ -166,7 +166,7 @@ export default class Hramap extends Component {
           </Overlay>
           )
         rasterLayer.addTo(this.mapApi);
-        // layerControl.addOverlay(imageOverlayNew, newLayerName);
+        rasterLayer.removeFrom(this.mapApi);
       }
     }
     return rasterOverlays
