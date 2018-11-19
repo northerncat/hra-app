@@ -96,7 +96,10 @@ export default class Hramap extends Component {
                         value > 1  ? '#cc5d5d' :
                         value > 0  ? '#efbaba' :
                                      'rgb(255, 255, 255, 0)'}) // gradient color
-                  rasterData[rasterFilename.replace(/\.[^/.]+$/, "")] = geoRasterLayer;
+
+                  let rasterName = rasterFilename.replace(/\.[^/.]+$/, "")
+                  rasterData[rasterName] = geoRasterLayer;
+                  this.setState({rastersOnMap: [...this.state.rastersOnMap, rasterName]});
                   if (Object.keys(rasterData).length === this.state.rasterLength) {
                     self.setState({rasters: rasterData});
                   }
@@ -173,12 +176,8 @@ export default class Hramap extends Component {
           </Overlay>
           )
         rasterLayer.addTo(this.mapApi); // rasterLayer.removeFrom(this.mapApi);
-        if (! this.state.rastersOnMap.includes(rasterName)) {
-          this.setState({rastersOnMap: [...this.state.rastersOnMap, rasterName]});
-        }
       }
     }
-    console.log(this.state.rastersOnMap)
     return rasterOverlays;
   }
 
