@@ -62,8 +62,8 @@ export default class Hramap extends Component {
                   self.setState({lats: [...self.state.lats, ...lats]});
                   self.fitToMaxBbox();
                 }
-              })
-          };
+              });
+          }
         },
         error => console.log(error));
 
@@ -92,9 +92,8 @@ export default class Hramap extends Component {
                   if (Object.keys(rasterData).length === this.state.rasterLength) {
                     self.setState({rasters: rasterData});
                   }
-              })
+              });
             });
-
           }
         },
       error => console.log(error));
